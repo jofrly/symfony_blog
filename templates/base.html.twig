@@ -13,7 +13,11 @@
             {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
     </head>
-    <body class="h-screen w-screen flex items-center justify-center">
+    <body class="h-screen w-screen flex flex-col items-center justify-center">
+        {% for message in app.flashes('alert') %}
+            <div class="bg-red-100 text-red-800 px-4 py-2 rounded-lg mb-8">{{ message }}</div>
+        {% endfor %}
+
         {% block body %}{% endblock %}
     </body>
 </html>
