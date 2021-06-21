@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Repository\UserRepository;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -15,9 +15,10 @@ class SessionsController extends AbstractController
     /**
      * @Route("/login", name="new_session", methods={"GET"})
      */
-    public function new(): Response
+    public function new(Request $request): Response
     {
-        return $this->render('sessions/new.html.twig', []);
+        $authenticated = boolval($request->cookies->get('user_id'));
+        return $this->render('sessions/new.html.twig', ['authenticated' => $authenticated]);
     }
 
     /**
@@ -30,10 +31,15 @@ class SessionsController extends AbstractController
 
         $user = $userRepository->findOneBy(['email' => $email]);
         if ($user && $passwordHasher->isPasswordValid($user, $password)) {
-            return $this->json('Valid E-Mail or Password!');
+            $cookie = new Cookie('user_id', $user->getId()); // cookie needs encryption otherwise user can set it; just for demo
+
+            $response = new Response('Valid E-Mail or Password!', Response::HTTP_OK);
+            $response->headers->setCookie($cookie);
+            return $response;
         }
 
         $this->addFlash('alert', 'Ungültige E-Mail oder Passwort.');
-        return $this->redirectToRoute('new_session');
+        $authenticated = boolval($request->cookies->get('user_id'));
+        return $this->render('sessions/new.html.twig', ['authenticated' => $authenticated], new Response('', 400));
     }
 }
