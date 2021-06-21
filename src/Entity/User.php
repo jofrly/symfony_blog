@@ -5,12 +5,14 @@ namespace App\Entity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
+ * @method string getUserIdentifier()
  */
-class User
+class User implements PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -27,7 +29,7 @@ class User
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $password_digest;
+    private $password;
 
     public function getId(): ?int
     {
@@ -46,15 +48,20 @@ class User
         return $this;
     }
 
-    public function getPasswordDigest(): ?string
+    public function getPassword(): ?string
     {
-        return $this->password_digest;
+        return $this->password;
     }
 
-    public function setPasswordDigest(string $password_digest): self
+    public function setPassword(string $password): self
     {
-        $this->password_digest = $password_digest;
+        $this->password= $password;
 
         return $this;
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
     }
 }

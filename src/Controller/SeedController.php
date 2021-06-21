@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -14,15 +15,18 @@ class SeedController extends AbstractController
     /**
      * @Route("/seed", name="seed")
      */
-    public function index(UserRepository $userRepository, ValidatorInterface $validator): Response
+    public function index(UserRepository $userRepository, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
 
-        $user = $userRepository->findOneBy(['email' => 'a@a.de']);
+        $userEmail = 'a@a.de';
+        $userPassword = 'string123';
+        $user = $userRepository->findOneBy(['email' => $userEmail]);
         if (!$user) {
             $user = new User();
-            $user->setEmail('a@a.de');
-            $user->setPasswordDigest('test');
+            $hashedPassword = $passwordHasher->hashPassword($user, $userPassword);
+            $user->setEmail($userEmail);
+            $user->setPassword($hashedPassword);
 
             $errors = $validator->validate($user);
             if (count($errors) == 0) {
