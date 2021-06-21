@@ -3,5 +3,23 @@
 {% block title %}Login to Symfony Blog{% endblock %}
 
 {% block body %}
-  <div class="bg-blue-500">login</div>
+  <div class="bg-white rounded-xl shadow mx-auto w-80 px-4 py-6">
+    <h1 class="text-center">Symfony Blog</h1>
+
+    <form action="/login" method="POST">
+      <div class="sb-formcontrol">
+        <label for="email" class="sb-label">E-Mail</label>
+        <input type="email" name="email" autocomplete="email" autofocus class="sb-input">
+      </div>
+
+      <div class="sb-formcontrol">
+        <label for="password" class="sb-label">Passwort</label>
+        <input type="password" name="password" autocomplete="password" class="sb-input">
+      </div>
+
+      <div class="text-center mt-8">
+        <button class="sb-btn">Anmelden</button>
+      </div>
+    </form>
+  </div>
 {% endblock %}
